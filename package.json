@@ -1,0 +1,23 @@
+{
+  "name": "multiCall-js",
+  "version": "1.0.0",
+  "description": "multiCall for EVM chain",
+  "author": "gao.gaoshuang@gmail.com",
+  "license": "MIT",
+  "main": "src/index.js",
+  "homepage": "https://github.com/gao623/multicall-js.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gao623/multicall-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gao623/multicall-js/issues"
+  },
+  "dependencies": {
+    "web3-eth-abi": "^1.7.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha --timeout 600000 tests -c --testnet --dev"
+  }
+}
