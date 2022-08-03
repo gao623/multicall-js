@@ -28,12 +28,12 @@ class BaseMultiCall {
       const targetDetails = web3EthAbi.decodeParameters(targetInfo[index].outputTypes, next);
       let info = {};
       for (let i = 0; i < targetInfo[index].outputTypes.length; ++i) {
-        if (targetInfo[index].outputTypes[i].name) {
-          info[targetInfo[index].outputTypes[i].name] = targetDetails[i]
-        } else if (targetInfo[index].outputNames
+        if (targetInfo[index].outputNames
           && targetInfo[index].outputNames.length === targetInfo[index].outputTypes.length
         ) {
           info[targetInfo[index].outputNames[i]] = targetDetails[i]
+        } else if (targetInfo[index].outputTypes[i].name) {
+          info[targetInfo[index].outputTypes[i].name] = targetDetails[i]
         } else {
           info[i] = targetDetails[i]
         }
