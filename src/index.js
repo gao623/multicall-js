@@ -1,1 +1,1 @@
-module.exports = {...require("./evmMultiCall"), ...require("./tronWebMultiCall")};
+module.exports = {...require("./multiCall"), ...require("./helper")};
