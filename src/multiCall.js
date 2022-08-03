@@ -103,5 +103,21 @@ class MultiCall extends BaseMultiCall {
     return returnData;
   }
 
+  static multiCallTypeDict = {
+    ethMultiCall: "ethMultiCall"
+    ,trxMultiCall: "trxMultiCall"
+  };
+
+  static async aggregate(client, multiCallAddress, targetInfo, options) {
+    options = Object.assign({}, {multiCallType: "ethMultiCall"}, options);
+    const { multiCallType } = options;
+    if (!MultiCall.multiCallTypeDict[multiCallType]) {
+      throw new Error(`invalid multiCallType "${multiCallType}", it should be one of [${Object.values(MultiCall.multiCallTypeDict)}]`);
+    }
+    const multiRequestResult = await MultiCall[multiCallType](client, multiCallAddress, targetInfo, options);
+    const result = await MultiCall.decodeEthMultiCall(targetInfo, multiRequestResult);
+    return result;
+  }
+
 }
 exports.MultiCall = MultiCall;
