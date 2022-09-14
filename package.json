@@ -16,7 +16,10 @@
   "dependencies": {
     "web3-eth-abi": "^1.7.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tronweb": "^4.2.0",
+    "web3": "^1.7.5"
+  },
   "scripts": {
     "test": "mocha --timeout 600000 tests -c --testnet --dev"
   }
