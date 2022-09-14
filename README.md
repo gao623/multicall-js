@@ -12,7 +12,7 @@ function getEthClient(nodeUrl) {
 
 ## step 2: multiCall function
 ```
-const { MultiCall } = require("multiCall-js");
+const { MultiCall } = require("@gao623/multicall-js");
 
 async function multiCall(client, config, multiCallType) {
   console.log("multiCallType", multiCallType)
