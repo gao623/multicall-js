@@ -95,6 +95,12 @@ class MultiCall extends BaseMultiCall {
   }
 
   static async trxMultiCall(tronWeb, multiCallAddress, targetInfo, options) {
+    const checkEthereumAddress = (address) => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address);
+    const hexStrip0x = (str) => str.replace(/^0x/, '');
+    if (checkEthereumAddress(multiCallAddress)) {
+      multiCallAddress = tronWeb.address.fromHex(`41${hexStrip0x(multiCallAddress)}`);
+    }
+
     const abiEncodedData = MultiCall.makeTargetCallData(targetInfo)
     if (!tronWeb.defaultAddress.hex) {
       tronWeb.setAddress(multiCallAddress);
