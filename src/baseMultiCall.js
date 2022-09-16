@@ -47,5 +47,65 @@ class BaseMultiCall {
       result: targetCallResultDecoded
     }
   }
+
+  static formatOutputTypes(outputTypes) {
+    var colLength = outputTypes.length
+    var possibleOutputCount = outputTypes.reduce((reduced, types) => {
+      const typeLength = Array.isArray(types) ? types.length : 1;
+      reduced *= typeLength;
+      return reduced;
+    }, 1);
+
+    var possibleOutputs = []
+    for (let i = 0; i < possibleOutputCount; ++i) {
+      possibleOutputs[i] = [];
+      for (let j = 0; j < colLength; ++j) {
+        const type = Array.isArray(outputTypes[j]) ? outputTypes[j][i%outputTypes[j].length] : outputTypes[j];
+        possibleOutputs[i][j] = type;
+      }
+    }
+    return possibleOutputs;
+  }
+
+  static async decodeEthMultiCallV2(targetInfo, returnData, log = console) {
+    const blockNumber = returnData.blockNumber;
+    const targetCallResultDecoded = returnData.returnData.reduce((acc, next, index) => {
+      const allPossibleOutputTypes = BaseMultiCall.formatOutputTypes(targetInfo[index].outputTypes);
+
+      const info = allPossibleOutputTypes.reduce((reduced, outputTypes) => {
+        let targetDetails;
+        try {
+          targetDetails = web3EthAbi.decodeParameters(outputTypes, next);
+        } catch (err) {
+          log.warn("ignore error:", err);
+        }
+        if (targetDetails) {
+          for (let i = 0; i < outputTypes.length; ++i) {
+            if (targetInfo[index].outputNames
+              && targetInfo[index].outputNames.length === outputTypes.length
+            ) {
+              reduced[targetInfo[index].outputNames[i]] || (reduced[targetInfo[index].outputNames[i]] = targetDetails[i]);
+            } else if (outputTypes[i].name) {
+              reduced[targetInfo[index].name[i]] || (reduced[outputTypes[i].name] = targetDetails[i]);
+            } else {
+              reduced[i] || (reduced[i] = targetDetails[i]);
+            }
+          }
+        }
+        return reduced;
+      }, {});
+      if (!Object.keys(info).length) {
+        throw new Error("BaseMultiCall: Decode outputs error");
+      }
+      acc.push(info);
+      return acc;
+    }, []);
+
+    return {
+      blockNumber: blockNumber,
+      result: targetCallResultDecoded
+    }
+  }
+
 }
 module.exports = BaseMultiCall;
