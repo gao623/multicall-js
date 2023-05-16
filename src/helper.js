@@ -1,6 +1,6 @@
 class Helper {
   static deepArrayFlatten(arr) {
-    return [].concat(...arr.map(v=>Array.isArray(v) ? Utils.deepArrayFlatten(v) : v));
+    return [].concat(...arr.map(v=>Array.isArray(v) ? Helper.deepArrayFlatten(v) : v));
   }
 
   static hexStrip0x(str) {
