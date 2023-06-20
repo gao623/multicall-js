@@ -84,14 +84,25 @@ class BaseMultiCall {
     if (returnData.returnStatus && returnData.returnStatus.length !== returnData.returnData.length) {
       throw new Error(`invalid parameter "returnData"`);
     }
-    const {log, includesAllOutputsWithStatus} = Object.assign({}, {
+    const shouldParseStatus = returnData.returnStatus && returnData.returnStatus.length;
+    const {log} = Object.assign({}, {
       log: console,
-      includesAllOutputsWithStatus: false,
     }, options);
 
-    const retBlockNumber = returnData.blockNumber;
-    const retData = returnData.returnData;
-    const retStatus = returnData.returnStatus;
+    const {
+      blockNumber:retBlockNumber
+      ,blockHash:retBlockHash
+      ,returnData:retData
+      ,returnStatus:retStatus
+    } = returnData;
+
+    let result = {};
+    if (retBlockNumber !== undefined) {
+      result.blockNumber = retBlockNumber;
+    }
+    if (retBlockHash !== undefined) {
+      result.blockHash = retBlockHash;
+    }
 
     let funcNameCount = 0;
     let funcNameRetDataRange = {};
@@ -143,7 +154,7 @@ class BaseMultiCall {
           }
           if (!decodeError) {
             reduced.push(info);
-            includesAllOutputsWithStatus && targetCallResultStatus.push(true);
+            shouldParseStatus && targetCallResultStatus.push(true);
           } else {
             throw new Error("BaseMultiCall: Decode outputs error");
           }
@@ -151,7 +162,7 @@ class BaseMultiCall {
       }
 
       if (retDataEndIndex === index && reduced.length === targetIndex) {
-        if (includesAllOutputsWithStatus) {
+        if (shouldParseStatus) {
           targetCallResultStatus.push(false);
           reduced.push(undefined);
         } else {
@@ -161,14 +172,12 @@ class BaseMultiCall {
       return reduced;
     }, []);
 
-    return !includesAllOutputsWithStatus ? {
-      blockNumber: retBlockNumber,
-      result: targetCallResultDecoded
-    } : {
-      blockNumber: retBlockNumber,
-      result: targetCallResultDecoded,
-      status: targetCallResultStatus
+    result.result = targetCallResultDecoded;
+    if (shouldParseStatus) {
+      result.status = targetCallResultStatus;
     }
+
+    return result;
   }
 
 }
