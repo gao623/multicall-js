@@ -29,7 +29,26 @@ class Helper {
               resolve();
           }, time);
       });
-  };
+  }
+
+  static parseError(err) {
+    if (err.message) {
+      return (err.message);
+    } else if (err.reason) {
+      return (err.reason);
+    } else if (err.error && err.error.details && err.error.details.length && err.error.details[0].message) {
+      return (err.error.details[0].message);
+    } else if (err.response && err.response.data && err.response.data.error) {
+      return err.response.data.error;
+    } else if (err.processed && err.processed.except && err.processed.except.message) {
+      return (err.processed.except.message);
+    } else  if (err.name) {
+      return (err.name);
+    } else {
+      return err;
+    }
+  }
+
 }
 
 exports.Helper = Helper;

@@ -1,4 +1,5 @@
 const web3EthAbi = require("web3-eth-abi");
+const {Helper} = require("./helper");
 
 class BaseMultiCall {
   static makeTargetCallData(targetInfo) {
@@ -156,7 +157,7 @@ class BaseMultiCall {
             reduced.push(info);
             shouldParseStatus && targetCallResultStatus.push(true);
           } else {
-            throw new Error("BaseMultiCall: Decode outputs error");
+            throw new Error(`BaseMultiCall.decodeEthMultiCallV2 decode '${JSON.stringify(targetInfo[targetIndex])}' outputs error:${Helper.parseError(decodeError)}`);
           }
         }
       }
