@@ -145,7 +145,7 @@ class BaseMultiCall {
                 ) {
                   info[targetInfo[targetIndex].outputNames[i]] || (info[targetInfo[targetIndex].outputNames[i]] = targetDetails[i]);
                 } else if (outputTypes[i].name) {
-                  info[targetInfo[targetIndex].name[i]] || (info[outputTypes[i].name] = targetDetails[i]);
+                  info[outputTypes[i].name[i]] || (info[outputTypes[i].name] = targetDetails[i]);
                 } else {
                   info[i] || (info[i] = targetDetails[i]);
                 }

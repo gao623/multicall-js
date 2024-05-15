@@ -151,6 +151,9 @@ class MultiCall extends BaseMultiCall {
         if (Array.isArray(info.inputTypes) && info.inputTypes.length) {
           info.inputTypes = MultiCall.formatFuncInputTypes(info.inputTypes);
         }
+        if (info.inputTypes.length != info.args.length) {
+          throw new Error(`not match "inputTypes" and "args"`)
+        }
         reduced.push(info);
       }
       return reduced;
