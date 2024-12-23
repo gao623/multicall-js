@@ -24,8 +24,8 @@ class MultiCall extends BaseMultiCall {
   }
 
   static async ethCall(web3, multiCallAddress, abiEncodedData, options) {
-    options = Object.assign({}, {aggregateFuncName: MultiCall.defaultAggregateFuncName}, options);
-    const aggregateFuncName = options.aggregateFuncName || MultiCall.defaultAggregateFuncName;
+    options = Object.assign({}, {aggregateFuncName: MultiCall.defaultAggregateFuncName, defaultBlock:"latest"}, options);
+    const { aggregateFuncName, defaultBlock} = options;
     MultiCall.makerDaoInfo.funcAbiDict[aggregateFuncName] || MultiCall.customInfo.funcAbiDict[aggregateFuncName];
     const outputTypes = MultiCall.makerDaoInfo.funcAbiDict[aggregateFuncName]
       ? MultiCall.makerDaoInfo.funcAbiDict[aggregateFuncName].outputs
@@ -35,7 +35,7 @@ class MultiCall extends BaseMultiCall {
     const returnData = await web3.eth.call({
       to: multiCallAddress,
       data: abiEncodedData
-    });
+    }, defaultBlock);
     const multiCallResultsDecodedDict = web3EthAbi.decodeParameters(outputTypes, returnData);
 
     let result = {};
@@ -58,7 +58,7 @@ class MultiCall extends BaseMultiCall {
 
   static async trxCall(tronWeb, multiCallAddress, targetCallData, options) {
     options = Object.assign({}, {aggregateFuncName: MultiCall.defaultAggregateFuncName}, options);
-    const aggregateFuncName = options.aggregateFuncName || MultiCall.defaultAggregateFuncName;
+    const { aggregateFuncName, defaultBlock} = options;
     const {outputs:outputTypes, inputs:inputsTypes} = MultiCall.makerDaoInfo.funcAbiDict[aggregateFuncName]
       ? MultiCall.makerDaoInfo.funcAbiDict[aggregateFuncName]
       : MultiCall.customInfo.funcAbiDict[aggregateFuncName]
@@ -162,9 +162,10 @@ class MultiCall extends BaseMultiCall {
       throw new Error("invalid targetInfo");
     }
     options = MultiCall.__parseOptions(options);
-    const { multiCallType, aggregateFuncName } = options;
-    const multiRequestResult = await MultiCall[multiCallType](client, multiCallAddress, inputTargetInfo, options);
-    const result = MultiCall.decodeEthMultiCallV2(inputTargetInfo, multiRequestResult, options);
+    const { multiCallType, ...otherOptions } = options;
+
+    const multiRequestResult = await MultiCall[multiCallType](client, multiCallAddress, inputTargetInfo, otherOptions);
+    const result = MultiCall.decodeEthMultiCallV2(inputTargetInfo, multiRequestResult, otherOptions);
     return result;
   }
 
@@ -173,7 +174,8 @@ class MultiCall extends BaseMultiCall {
       multiCallType: MultiCall.multiCallTypeDict.ethMultiCall,
       aggregateFuncName: MultiCall.defaultAggregateFuncName,
       requireSuccess: false,
-      log: console
+      log: console,
+      defaultBlock: "latest",
     }, options);
 
     const { multiCallType, aggregateFuncName } = options;
